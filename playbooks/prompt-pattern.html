@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stop Pasting Into ChatGPT Blindly — Use This Prompt Pattern · Toolstack Lab</title>
+  <meta name="description" content="A model-agnostic 4-line prompt frame: Role · Goal · Constraints · Output format. Same notes, usable output — ChatGPT, Claude, or Gemini. Companion playbook to our Short.">
+  <meta name="robots" content="index,follow">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --surface: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --faint: #64748b;
+      --line: #e2e8f0;
+      --indigo: #4f46e5;
+      --indigo-dark: #3730a3;
+      --indigo-soft: #eef2ff;
+      --teal: #0d9488;
+      --teal-soft: #f0fdfa;
+      --amber-note: #92400e;
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+      --max: 1080px;
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--indigo); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    a:hover { color: var(--indigo-dark); }
+    .wrap { width: min(100% - 2rem, var(--max)); margin-inline: auto; }
+    .skip {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--indigo); color: #fff; padding: .5rem 1rem; z-index: 100;
+    }
+    .skip:focus { left: 1rem; top: 1rem; }
+
+    .temp-banner {
+      background: var(--amber-bg);
+      border-bottom: 1px solid var(--amber-border);
+      color: var(--amber-note);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 0.55rem 1rem;
+      font-weight: 600;
+    }
+
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--indigo), var(--teal));
+      display: grid; place-items: center;
+      color: #fff; font-size: 0.75rem; font-weight: 800;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.15rem 0.85rem;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] { color: var(--indigo); }
+    .nav-links a[aria-current="page"] { font-weight: 700; }
+    .nav-cta { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 1.2;
+      transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+    }
+    .btn-primary {
+      background: var(--indigo);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+    }
+    .btn-primary:hover { background: var(--indigo-dark); color: #fff; }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .btn-secondary:hover {
+      border-color: #cbd5e1;
+      color: var(--indigo-dark);
+      background: var(--indigo-soft);
+    }
+    .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+
+    .page-hero {
+      padding: 2.5rem 0 1.75rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(79, 70, 229, 0.08), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 10%, rgba(13, 148, 136, 0.07), transparent 50%),
+        var(--bg);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: var(--teal-soft);
+      border: 1px solid #99f6e4;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .page-hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.35rem);
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.85rem;
+      max-width: 22ch;
+    }
+    .page-hero .lede {
+      margin: 0;
+      color: var(--muted);
+      max-width: 42rem;
+      font-size: 1.05rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.15rem;
+    }
+    .chip {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      color: var(--indigo);
+      background: var(--indigo-soft);
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+    }
+    .chip.teal { color: var(--teal); background: var(--teal-soft); }
+    .chip.slate { color: var(--muted); background: var(--bg-alt); }
+
+    .disclosure-strip {
+      background: var(--indigo-soft);
+      border-block: 1px solid #c7d2fe;
+      padding: 0.9rem 0;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .disclosure-strip a { font-weight: 600; }
+
+    section { padding: 2.5rem 0; }
+    section.alt { background: var(--bg-alt); border-block: 1px solid var(--line); }
+    .section-head { margin-bottom: 1.35rem; max-width: 42rem; }
+    .section-head h2 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.3rem, 3vw, 1.65rem);
+      letter-spacing: -0.02em;
+    }
+    .section-head p { margin: 0; color: var(--muted); }
+    .prose { max-width: 42rem; color: var(--muted); font-size: 0.975rem; }
+    .prose p { margin: 0 0 0.9rem; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose ul, .prose ol {
+      margin: 0 0 0.9rem;
+      padding-left: 1.2rem;
+    }
+    .prose li { margin-bottom: 0.4rem; }
+    .prose strong { color: var(--ink); }
+
+    .frame-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .frame-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.2rem;
+      box-shadow: var(--shadow);
+    }
+    .frame-card .num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--indigo);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+    }
+    .frame-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; letter-spacing: -0.01em; }
+    .frame-card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+
+    .rule-banner {
+      background: linear-gradient(135deg, var(--indigo-soft), var(--teal-soft));
+      border: 1px solid #c7d2fe;
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      max-width: 42rem;
+      box-shadow: var(--shadow);
+    }
+    .rule-banner strong {
+      display: block;
+      font-size: 1.05rem;
+      letter-spacing: -0.015em;
+      margin-bottom: 0.35rem;
+      color: var(--ink);
+    }
+    .rule-banner p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0 0 1rem;
+    }
+    .code-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin: 0 0 0.5rem;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .compare-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.3rem;
+      box-shadow: var(--shadow);
+    }
+    .compare-card h3 {
+      margin: 0 0 0.65rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 0.55rem; height: 0.55rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.no { background: #dc2626; }
+    .dot.yes { background: var(--teal); }
+    .compare-card ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .compare-card li { margin-bottom: 0.4rem; }
+    .compare-card li:last-child { margin-bottom: 0; }
+
+    .fail-list {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      box-shadow: var(--shadow);
+      max-width: 42rem;
+    }
+    .fail-list ol {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .fail-list li { margin-bottom: 0.65rem; }
+    .fail-list li:last-child { margin-bottom: 0; }
+    .fail-list strong { color: var(--ink); }
+
+    .cta-strip {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.5rem 1.6rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cta-strip h2 { margin: 0 0 0.35rem; font-size: 1.2rem; letter-spacing: -0.02em; }
+    .cta-strip p { margin: 0; color: var(--muted); font-size: 0.9rem; max-width: 28rem; }
+    .cta-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      max-width: 42rem;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+    .toc strong { display: block; margin-bottom: 0.45rem; font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--faint); }
+    .toc ol { margin: 0; padding-left: 1.15rem; color: var(--muted); }
+    .toc li { margin-bottom: 0.25rem; }
+    .toc a { text-decoration: none; font-weight: 500; }
+    .toc a:hover { text-decoration: underline; }
+
+    footer {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 2.5rem 0 2rem;
+      font-size: 0.875rem;
+    }
+    footer a { color: #a5b4fc; }
+    footer a:hover { color: #c7d2fe; }
+    .footer-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .footer-nav a { text-decoration: none; font-weight: 500; color: #e2e8f0; }
+    .footer-nav a:hover { color: #a5b4fc; }
+    .legal p { margin: 0 0 0.75rem; max-width: 48rem; line-height: 1.55; }
+    .legal p:last-child { margin-bottom: 0; }
+    .copy-line {
+      margin-top: 1.5rem;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 800px) {
+      .frame-grid, .compare { grid-template-columns: 1fr; }
+      .nav-links { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <div class="temp-banner" role="status">TEMP brand: Toolstack Lab — provisional name until Jack locks brand</div>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark" aria-hidden="true">TL</span>
+        Toolstack Lab
+      </a>
+      <nav aria-label="Primary">
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="prompt-pattern.html" aria-current="page">Playbooks</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../disclosures.html">Disclosures</a></li>
+          <li class="nav-cta">
+            <a class="btn btn-primary btn-sm" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
+            <a class="btn btn-secondary btn-sm" href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="playbook-title">
+      <div class="wrap">
+        <p class="eyebrow">Playbook · prompt pattern</p>
+        <h1 id="playbook-title">Stop pasting into ChatGPT blindly — use this prompt pattern</h1>
+        <p class="lede">Raw notes into a chat window rarely give you something you can ship. A four-line frame — Role, Goal, Constraints, Output format — turns the same messy standup into a usable draft. Works in ChatGPT, Claude, and Gemini. Same pattern, any model.</p>
+        <div class="meta-row">
+          <span class="chip">Role · Goal · Constraints · Format</span>
+          <span class="chip teal">Model-agnostic</span>
+          <span class="chip slate">Companion to Short 1</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="disclosure-strip">
+      <div class="wrap">
+        AI-assisted production may apply. No income guarantees. Not financial advice.
+        See <a href="../disclosures.html">Disclosures</a> · <a href="../about.html">About</a>.
+      </div>
+    </div>
+
+    <section aria-labelledby="toc-title">
+      <div class="wrap">
+        <nav class="toc" aria-labelledby="toc-title">
+          <strong id="toc-title">On this page</strong>
+          <ol>
+            <li><a href="#problem">The paste-and-hope problem</a></li>
+            <li><a href="#frame">The 4-line frame</a></li>
+            <li><a href="#example">Copy-paste example</a></li>
+            <li><a href="#before-after">Before / after (what to expect)</a></li>
+            <li><a href="#one-rule">One rule</a></li>
+            <li><a href="#when-it-fails">When it fails</a></li>
+            <li><a href="#next">Soft next steps</a></li>
+          </ol>
+        </nav>
+      </div>
+    </section>
+
+    <section class="alt" id="problem" aria-labelledby="problem-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="problem-title">The paste-and-hope problem</h2>
+          <p>If you dump raw notes into a chat and hope, you’re leaving half the answer on the table.</p>
+        </div>
+        <div class="prose">
+          <p>Most people treat the model like a search box: paste the mess, hit send, skim whatever comes back. The reply is often polite fluff — a “general summary,” inventing structure you didn’t ask for, or inventing deadlines you never mentioned.</p>
+          <p>That isn’t a model failure. It’s a briefing failure. The model doesn’t know whether you want a weekly update, a checklist for owners, a rewrite for executives, or a brainstorm. Without constraints and a format, it guesses — and guessing produces text that looks finished but isn’t usable.</p>
+          <p>This playbook is the long-form companion to our short demo: same messy standup notes, framed once, so you get something you can actually hand off.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="frame" aria-labelledby="frame-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="frame-title">The 4-line frame</h2>
+          <p>Four lines above your notes. That’s the whole pattern.</p>
+        </div>
+        <div class="frame-grid">
+          <div class="frame-card">
+            <div class="num">01 · ROLE</div>
+            <h3>Who the model is</h3>
+            <p>Give it a job title for this turn — “concise ops writing assistant,” “skeptical editor,” “meeting scrubber.” Role steers tone and what it prioritizes.</p>
+          </div>
+          <div class="frame-card">
+            <div class="num">02 · GOAL</div>
+            <h3>What you need done</h3>
+            <p>One sentence on the outcome: turn notes into a weekly update draft, extract open questions, rewrite for a client email. Goal beats “help with this.”</p>
+          </div>
+          <div class="frame-card">
+            <div class="num">03 · CONSTRAINTS</div>
+            <h3>Limits, tone, what to skip</h3>
+            <p>Max length, no invented deadlines, neutral tone, skip unclear items. Constraints are where quality lives — they stop the model from filling gaps with fiction.</p>
+          </div>
+          <div class="frame-card">
+            <div class="num">04 · OUTPUT FORMAT</div>
+            <h3>Shape of the answer</h3>
+            <p>Markdown checklist, table, bullets with owners as [TBD], three paragraphs max. Format makes the reply paste-ready instead of “essay-shaped.”</p>
+          </div>
+        </div>
+        <div class="prose" style="margin-top: 1.25rem;">
+          <p>ChatGPT is just the demo surface. The same four lines work in Claude and Gemini. Change the product; keep the briefing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="example" aria-labelledby="example-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="example-title">Copy-paste example</h2>
+          <p>Generic standup notes only — no real names, emails, or company secrets. Paste the frame, then the notes, then send.</p>
+        </div>
+
+        <p class="code-label">Messy notes (input)</p>
+        <pre class="code-block" tabindex="0">standup notes — draft
+- follow up on the launch checklist
+- need tighter bullets for the weekly update
+- someone asked about the timeline?? unclear
+- also the FAQ page is messy</pre>
+
+        <p class="code-label">4-line prompt frame (paste above the notes)</p>
+        <pre class="code-block" tabindex="0">Role: You are a concise ops writing assistant.
+Goal: Turn these standup notes into a usable weekly update draft.
+Constraints: Max 5 bullets. No invented deadlines. Neutral tone. Skip anything unclear.
+Output format: Markdown checklist with owners left as [TBD].
+
+standup notes — draft
+- follow up on the launch checklist
+- need tighter bullets for the weekly update
+- someone asked about the timeline?? unclear
+- also the FAQ page is messy</pre>
+
+        <div class="prose">
+          <p>Expect a short checklist: launch follow-up, weekly bullets, FAQ tidy-up — unclear timeline items omitted or flagged, owners as <code>[TBD]</code>, no fake dates. That is “usable,” not “impressive.”</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="before-after" aria-labelledby="ba-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="ba-title">Before / after — what to expect</h2>
+          <p>Qualitative only. No fake metrics, scores, or “X% better” claims.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card">
+            <h3><span class="dot no" aria-hidden="true"></span> Raw paste</h3>
+            <ul>
+              <li>Vague “here’s a general summary…” opening</li>
+              <li>Invented structure or deadlines you never said</li>
+              <li>Essay-length fluff you have to rewrite</li>
+              <li>Unclear items quietly “resolved” by the model</li>
+            </ul>
+          </div>
+          <div class="compare-card">
+            <h3><span class="dot yes" aria-hidden="true"></span> Framed paste</h3>
+            <ul>
+              <li>Short checklist matching your format line</li>
+              <li>Gaps left as [TBD] or skipped on purpose</li>
+              <li>Tone and length match constraints</li>
+              <li>Something you can paste into a doc and edit</li>
+            </ul>
+          </div>
+        </div>
+        <div class="prose" style="margin-top: 1.25rem;">
+          <p>You’re not buying magic. You’re buying a briefing habit: same notes, clearer job for the model, less cleanup for you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="one-rule" aria-labelledby="rule-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="rule-title">One rule</h2>
+          <p>Memorize this; the rest is optional polish.</p>
+        </div>
+        <div class="rule-banner" role="note">
+          <strong>Never skip constraints + format.</strong>
+          <p>That’s where quality lives. Role and Goal get you pointed; Constraints and Output format stop fluff, invented facts, and unusable shape. If you’re in a hurry, keep those two lines — always.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="when-it-fails" aria-labelledby="fail-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="fail-title">When it fails</h2>
+          <p>The frame is not a substitute for judgment. Watch for these.</p>
+        </div>
+        <div class="fail-list">
+          <ol>
+            <li><strong>Vague goal.</strong> “Make this better” still leaves the model guessing. Name the artifact (weekly update, FAQ rewrite, open-question list).</li>
+            <li><strong>Constraints that fight each other.</strong> “Max 3 bullets” plus “cover every detail” forces compromise. Pick one priority.</li>
+            <li><strong>No human check on facts.</strong> The frame reduces invention; it doesn’t verify sources. Don’t publish claims you didn’t open yourself.</li>
+            <li><strong>Wrong job for chat.</strong> Recurring templates inside a workspace may belong in Notion (or similar) — use chat for blank-page thinking and one-off framing.</li>
+            <li><strong>Pasting secrets.</strong> Never drop real emails, API keys, or private customer data into a public model. Use generic stand-ins like the demo notes above.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="next" aria-labelledby="next-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="next-title">Soft next steps</h2>
+          <p>No payment. No checkout. Just the list and the channel when you want more.</p>
+        </div>
+        <div class="cta-strip">
+          <div>
+            <h2>Want the full prompt kit?</h2>
+            <p>Join the waitlist for the expanded kit and the next workflow (notes → framed prompt → draft). Soft CTA only.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Join the waitlist</a>
+            <a class="btn btn-secondary" href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube channel</a>
+          </div>
+        </div>
+        <div class="prose" style="margin-top: 1.25rem;">
+          <p>Also: <a href="../about.html">About</a> · <a href="../disclosures.html">Disclosures</a> · <a href="../index.html">Home</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-legal">
+    <div class="wrap">
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="../index.html">Home</a>
+        <a href="prompt-pattern.html">Playbooks</a>
+        <a href="../about.html">About</a>
+        <a href="../disclosures.html">Disclosures</a>
+        <a href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
+        <a href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
+      </nav>
+
+      <div class="legal">
+        <p><strong>AI-assisted production:</strong> Scripts, copy, or edits may be AI-assisted; we disclose where required.</p>
+        <p><strong>Not financial advice.</strong> No income guarantees. No payment or checkout on this page.</p>
+        <p>Affiliate links: none active on this playbook. Details: <a href="../disclosures.html">Disclosures</a>.</p>
+      </div>
+
+      <p class="copy-line">© 2026 Toolstack Lab (provisional name). TEMP brand: Toolstack Lab.</p>
+    </div>
+  </footer>
+</body>
+</html>
