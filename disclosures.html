@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Disclosures — Toolstack Lab</title>
+  <meta name="description" content="Affiliate, AI-assisted production, privacy, and scope disclosures for Toolstack Lab. No income guarantees. Not financial advice.">
+  <meta name="robots" content="index,follow">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --surface: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --faint: #64748b;
+      --line: #e2e8f0;
+      --indigo: #4f46e5;
+      --indigo-dark: #3730a3;
+      --indigo-soft: #eef2ff;
+      --teal: #0d9488;
+      --teal-soft: #f0fdfa;
+      --amber-note: #92400e;
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+      --max: 1080px;
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--indigo); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    a:hover { color: var(--indigo-dark); }
+    .wrap { width: min(100% - 2rem, var(--max)); margin-inline: auto; }
+    .skip {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--indigo); color: #fff; padding: .5rem 1rem; z-index: 100;
+    }
+    .skip:focus { left: 1rem; top: 1rem; }
+
+    .temp-banner {
+      background: var(--amber-bg);
+      border-bottom: 1px solid var(--amber-border);
+      color: var(--amber-note);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 0.55rem 1rem;
+      font-weight: 600;
+    }
+
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--indigo), var(--teal));
+      display: grid; place-items: center;
+      color: #fff; font-size: 0.75rem; font-weight: 800;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.15rem 0.85rem;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] { color: var(--indigo); }
+    .nav-links a[aria-current="page"] { font-weight: 700; }
+    .nav-cta { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 1.2;
+      transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+    }
+    .btn-primary {
+      background: var(--indigo);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+    }
+    .btn-primary:hover { background: var(--indigo-dark); color: #fff; }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .btn-secondary:hover {
+      border-color: #cbd5e1;
+      color: var(--indigo-dark);
+      background: var(--indigo-soft);
+    }
+    .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+
+    .page-hero {
+      padding: 2.5rem 0 1.75rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(79, 70, 229, 0.08), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 10%, rgba(13, 148, 136, 0.07), transparent 50%),
+        var(--bg);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: var(--teal-soft);
+      border: 1px solid #99f6e4;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .page-hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.85rem;
+    }
+    .page-hero .lede {
+      margin: 0;
+      color: var(--muted);
+      max-width: 42rem;
+      font-size: 1.05rem;
+    }
+
+    section { padding: 2.25rem 0; }
+    section.alt { background: var(--bg-alt); border-block: 1px solid var(--line); }
+    .section-head { margin-bottom: 1.1rem; max-width: 40rem; }
+    .section-head h2 {
+      margin: 0 0 0.45rem;
+      font-size: clamp(1.25rem, 2.8vw, 1.5rem);
+      letter-spacing: -0.02em;
+    }
+    .section-head p { margin: 0; color: var(--muted); }
+
+    .disc-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      box-shadow: var(--shadow);
+      max-width: 44rem;
+    }
+    .disc-card p {
+      margin: 0 0 0.75rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .disc-card p:last-child { margin-bottom: 0; }
+    .disc-card ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .disc-card li { margin-bottom: 0.4rem; }
+    .disc-card li:last-child { margin-bottom: 0; }
+
+    .warn-box {
+      margin-top: 0;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      font-size: 0.9rem;
+      max-width: 44rem;
+    }
+
+    .cta-strip {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.5rem 1.6rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 44rem;
+    }
+    .cta-strip h2 { margin: 0 0 0.35rem; font-size: 1.15rem; letter-spacing: -0.02em; }
+    .cta-strip p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .cta-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+    footer {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 2.5rem 0 2rem;
+      font-size: 0.875rem;
+    }
+    footer a { color: #a5b4fc; }
+    footer a:hover { color: #c7d2fe; }
+    .footer-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .footer-nav a { text-decoration: none; font-weight: 500; color: #e2e8f0; }
+    .footer-nav a:hover { color: #a5b4fc; }
+    .legal p { margin: 0 0 0.75rem; max-width: 48rem; line-height: 1.55; }
+    .legal p:last-child { margin-bottom: 0; }
+    .copy-line {
+      margin-top: 1.5rem;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 800px) {
+      .nav-links { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <div class="temp-banner" role="status">TEMP brand: Toolstack Lab — provisional name until Jack locks brand</div>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">TL</span>
+        Toolstack Lab
+      </a>
+      <nav aria-label="Primary">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="disclosures.html" aria-current="page">Disclosures</a></li>
+          <li class="nav-cta">
+            <a class="btn btn-primary btn-sm" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
+            <a class="btn btn-secondary btn-sm" href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="disc-title">
+      <div class="wrap">
+        <p class="eyebrow">Legal · transparency</p>
+        <h1 id="disc-title">Disclosures</h1>
+        <p class="lede">How we handle affiliates, AI-assisted production, privacy, and what this site does — and does not — cover. No income guarantees. Not financial advice.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="aff-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="aff-title">Affiliate disclosure</h2>
+        </div>
+        <div class="disc-card">
+          <p><strong>Week-1:</strong> No affiliate links are active on this site.</p>
+          <p>When we use affiliate links later, every one will be labeled on the page and noted here. Some links may earn us a commission at no extra cost to you. We only recommend tools we’d demo honestly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" aria-labelledby="ai-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="ai-title">AI-assisted production</h2>
+        </div>
+        <div class="disc-card">
+          <p>Parts of production may be AI-assisted — drafting, copy, voiceover, or edits. We disclose AI-assisted production where platform or local rules require.</p>
+          <p>Human review stays on claims, limits, and whether a workflow is actually copyable.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="advice-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="advice-title">No income guarantees · not financial advice</h2>
+        </div>
+        <div class="warn-box" role="note">
+          <strong>Not financial, legal, or investment advice.</strong> We show tools and workflows. Results depend on your skills, audience, and tool fit. We do not guarantee income, traffic, or ROI.
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" aria-labelledby="scope-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="scope-title">Out of scope</h2>
+        </div>
+        <div class="disc-card">
+          <p>This hub permanently excludes:</p>
+          <ul>
+            <li>Polymarket, trading, prediction markets, gambling, or wallet/crypto promo</li>
+            <li>Payment, checkout, Stripe, Gumroad, or any buy-now flow on this site (Week-1 and this kit)</li>
+            <li>Fake metrics: fabricated MRR, vanity traffic, or unverifiable “#1 tool” rankings</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="privacy-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="privacy-title">Privacy</h2>
+        </div>
+        <div class="disc-card">
+          <p>Waitlist contact is email only (via mailto). We do not sell your address. Unsubscribe anytime by replying to stop.</p>
+          <p>No payment data is collected on this site — there is no checkout.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" aria-labelledby="contact-title">
+      <div class="wrap">
+        <div class="cta-strip">
+          <div>
+            <h2 id="contact-title">Contact</h2>
+            <p>Questions or waitlist: same mailto. Or return to <a href="index.html">Home</a> · <a href="about.html">About</a>.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Email waitlist / contact</a>
+            <a class="btn btn-secondary" href="index.html">Back to home</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-legal">
+    <div class="wrap">
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="disclosures.html">Disclosures</a>
+        <a href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
+        <a href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
+      </nav>
+
+      <div class="legal">
+        <p><strong>Affiliate disclosure:</strong> None active in Week-1. When used, links will be labeled on this page.</p>
+        <p><strong>AI-assisted production:</strong> Scripts, copy, or edits may be AI-assisted; we disclose where required.</p>
+        <p><strong>Not financial advice.</strong> No income guarantees. No payment or checkout on this site.</p>
+      </div>
+
+      <p class="copy-line">© 2026 Toolstack Lab (provisional name). TEMP brand: Toolstack Lab.</p>
+    </div>
+  </footer>
+</body>
+</html>
