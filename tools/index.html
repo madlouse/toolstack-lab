@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About — Toolstack Lab</title>
-  <meta name="description" content="Who Toolstack Lab is for, how we review AI tools, and our relation to YouTube. Demos, not hype. No income guarantees.">
+  <title>Tools directory — Toolstack Lab</title>
+  <meta name="description" content="Stub directory of AI tools Toolstack Lab may demo. Official sites only. Partner links TBD and disclosed when live. No checkout.">
   <meta name="robots" content="index,follow">
   <style>
     :root {
@@ -28,7 +28,6 @@
       --max: 1080px;
       --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     }
-
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -47,7 +46,6 @@
       background: var(--indigo); color: #fff; padding: .5rem 1rem; z-index: 100;
     }
     .skip:focus { left: 1rem; top: 1rem; }
-
     .temp-banner {
       background: var(--amber-bg);
       border-bottom: 1px solid var(--amber-border);
@@ -57,7 +55,6 @@
       padding: 0.55rem 1rem;
       font-weight: 600;
     }
-
     .nav {
       background: var(--surface);
       border-bottom: 1px solid var(--line);
@@ -140,7 +137,6 @@
       background: var(--indigo-soft);
     }
     .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
-
     .page-hero {
       padding: 2.5rem 0 1.75rem;
       background:
@@ -172,92 +168,80 @@
     .page-hero .lede {
       margin: 0;
       color: var(--muted);
-      max-width: 42rem;
+      max-width: 44rem;
       font-size: 1.05rem;
     }
-
-    section { padding: 2.5rem 0; }
-    section.alt { background: var(--bg-alt); border-block: 1px solid var(--line); }
-    .section-head { margin-bottom: 1.35rem; max-width: 40rem; }
-    .section-head h2 {
-      margin: 0 0 0.5rem;
-      font-size: clamp(1.3rem, 3vw, 1.65rem);
+    .note-strip {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-note);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      max-width: 48rem;
+      margin-top: 1.25rem;
+    }
+    section { padding: 2.25rem 0; }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .tool-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
       letter-spacing: -0.02em;
     }
-    .section-head p { margin: 0; color: var(--muted); }
-    .prose { max-width: 42rem; color: var(--muted); font-size: 0.975rem; }
-    .prose p { margin: 0 0 0.9rem; }
-    .prose p:last-child { margin-bottom: 0; }
-
-    .check-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-top: 0.5rem;
-    }
-    .check {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.15rem 1.2rem;
-      box-shadow: var(--shadow);
-    }
-    .check .num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--indigo);
-      letter-spacing: 0.04em;
-      margin-bottom: 0.35rem;
-    }
-    .check h3 { margin: 0 0 0.35rem; font-size: 1rem; }
-    .check p { margin: 0; font-size: 0.9rem; color: var(--muted); }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .split-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.35rem 1.4rem;
-      box-shadow: var(--shadow);
-    }
-    .split-card h3 {
-      margin: 0 0 0.75rem;
-      font-size: 1.05rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .dot {
-      width: 0.55rem; height: 0.55rem;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .dot.yes { background: var(--teal); }
-    .dot.no { background: #dc2626; }
-    .split-card ul {
+    .tool-card .job {
       margin: 0;
-      padding-left: 1.15rem;
       color: var(--muted);
       font-size: 0.95rem;
+      flex: 1;
     }
-    .split-card li { margin-bottom: 0.45rem; }
-    .split-card li:last-child { margin-bottom: 0; }
-
-    .yt-box {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.35rem 1.4rem;
-      box-shadow: var(--shadow);
-      max-width: 42rem;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.55rem;
+      border-radius: 999px;
+      width: fit-content;
     }
-    .yt-box p { margin: 0 0 0.85rem; color: var(--muted); font-size: 0.95rem; }
-    .yt-box p:last-of-type { margin-bottom: 1rem; }
-
+    .badge-research {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .badge-demo {
+      background: var(--teal-soft);
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+    }
+    .tool-meta {
+      font-size: 0.8rem;
+      color: var(--faint);
+      margin: 0;
+    }
+    .tool-meta a { font-weight: 600; text-decoration: none; }
+    .tool-meta a:hover { text-decoration: underline; }
+    .partner-note {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--faint);
+      font-style: italic;
+    }
     .cta-strip {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -269,11 +253,11 @@
       gap: 1rem;
       align-items: center;
       justify-content: space-between;
+      max-width: 48rem;
     }
-    .cta-strip h2 { margin: 0 0 0.35rem; font-size: 1.2rem; letter-spacing: -0.02em; }
-    .cta-strip p { margin: 0; color: var(--muted); font-size: 0.9rem; max-width: 28rem; }
+    .cta-strip h2 { margin: 0 0 0.35rem; font-size: 1.15rem; letter-spacing: -0.02em; }
+    .cta-strip p { margin: 0; color: var(--muted); font-size: 0.9rem; }
     .cta-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
-
     footer {
       background: #0f172a;
       color: #cbd5e1;
@@ -299,9 +283,7 @@
       color: #64748b;
       font-size: 0.8rem;
     }
-
     @media (max-width: 800px) {
-      .check-grid, .split { grid-template-columns: 1fr; }
       .nav-links { width: 100%; }
     }
   </style>
@@ -313,16 +295,17 @@
 
   <header class="nav">
     <div class="wrap nav-inner">
-      <a class="brand" href="index.html">
+      <a class="brand" href="../index.html">
         <span class="brand-mark" aria-hidden="true">TL</span>
         Toolstack Lab
       </a>
       <nav aria-label="Primary">
         <ul class="nav-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="tools/index.html">Tools</a></li>
-          <li><a href="about.html" aria-current="page">About</a></li>
-          <li><a href="disclosures.html">Disclosures</a></li>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Tools</a></li>
+          <li><a href="../playbooks/prompt-pattern.html">Playbooks</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../disclosures.html">Disclosures</a></li>
           <li class="nav-cta">
             <a class="btn btn-primary btn-sm" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
             <a class="btn btn-secondary btn-sm" href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
@@ -333,110 +316,98 @@
   </header>
 
   <main id="main">
-    <section class="page-hero" aria-labelledby="about-title">
+    <section class="page-hero" aria-labelledby="tools-title">
       <div class="wrap">
-        <p class="eyebrow">About · demos, not hype</p>
-        <h1 id="about-title">Who we are</h1>
-        <p class="lede">Toolstack Lab is an English-primary info hub for solo creators, freelancers, and indie builders. We review and compare real AI tools, publish copyable workflows, and stay honest about limits, cost, and when a human still wins.</p>
+        <p class="eyebrow">Directory · stub</p>
+        <h1 id="tools-title">Tools we might demo</h1>
+        <p class="lede">Shortlist of AI tools for creators, freelancers, and indie builders. This page is a research / demo queue — not a ranking and not a storefront. Links go to official sites only.</p>
+        <p class="note-strip" role="note"><strong>No partner links yet.</strong> Affiliate / referral URLs are TBD and will be labeled on-page + listed on <a href="../disclosures.html">Disclosures</a> when live. No checkout on this site.</p>
       </div>
     </section>
 
-    <section aria-labelledby="promise-title">
+    <section aria-labelledby="dir-title">
       <div class="wrap">
-        <div class="section-head">
-          <h2 id="promise-title">Our promise</h2>
-          <p>Demos and commentary you can trust — not hype decks.</p>
-        </div>
-        <div class="prose">
-          <p>We prefer screen-real workflows over feature laundry lists. Original demos and commentary only — no stolen clips, no re-upload farms. We call out cost, privacy, lock-in, and when to stop automating.</p>
-          <p>No income guarantees. No fake star scores, fabricated MRR, or “guaranteed ROI.” Affiliates, when used later, will always be labeled. See <a href="disclosures.html">Disclosures</a>.</p>
-        </div>
-      </div>
-    </section>
+        <h2 id="dir-title" class="visually-hidden" style="position:absolute;left:-9999px;">Tool cards</h2>
+        <div class="tool-grid">
 
-    <section class="alt" id="how-we-review" aria-labelledby="method-title">
-      <div class="wrap">
-        <div class="section-head">
-          <h2 id="method-title">How we review</h2>
-          <p>Every review answers: <em>What tool, what job, what steps, what pitfall?</em></p>
-        </div>
-        <div class="check-grid">
-          <div class="check">
-            <div class="num">01</div>
-            <h3>Job fit</h3>
-            <p>Who is this for, and which job does it actually finish?</p>
-          </div>
-          <div class="check">
-            <div class="num">02</div>
-            <h3>Hands-on path</h3>
-            <p>Steps you can repeat; keyboard-visible where possible.</p>
-          </div>
-          <div class="check">
-            <div class="num">03</div>
-            <h3>Limits</h3>
-            <p>Cost, privacy, hallucinations, lock-in, when to stop automating.</p>
-          </div>
-          <div class="check">
-            <div class="num">04</div>
-            <h3>Alternatives</h3>
-            <p>When we compare, criteria beat brand loyalty.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+          <article class="tool-card">
+            <span class="badge badge-demo">Demo soon</span>
+            <h2>Claude</h2>
+            <p class="job">Long-context writing, analysis, and coding assistant for drafts that need careful editing.</p>
+            <p class="tool-meta">Official: <a href="https://claude.ai/" rel="noopener noreferrer" target="_blank">claude.ai</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
 
-    <section id="for-whom" aria-labelledby="audience-title">
-      <div class="wrap">
-        <div class="section-head">
-          <h2 id="audience-title">Who this is for</h2>
-          <p>Clear fit beats broad hype.</p>
-        </div>
-        <div class="split">
-          <div class="split-card">
-            <h3><span class="dot yes" aria-hidden="true"></span> For</h3>
-            <ul>
-              <li>Solo creators, freelancers, indie builders who want <strong>copyable</strong> AI workflows</li>
-              <li>Ops / PMs who need criteria to pick tools without the pitch deck</li>
-              <li>Viewers of practical AI tool demos who want the long-form companion page</li>
-            </ul>
-          </div>
-          <div class="split-card">
-            <h3><span class="dot no" aria-hidden="true"></span> Not for</h3>
-            <ul>
-              <li>Anyone chasing “get rich with AI” income promises</li>
-              <li>Traders / prediction-market / gambling promo seekers</li>
-              <li>Teams wanting a tool checkout or paid listing <strong>this week</strong> (submit = future)</li>
-              <li>Readers who want unverifiable “#1 tool” rankings with no method</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+          <article class="tool-card">
+            <span class="badge badge-demo">Demo soon</span>
+            <h2>ChatGPT</h2>
+            <p class="job">General-purpose chat and multimodal helper for ideation, outlines, and everyday prompts.</p>
+            <p class="tool-meta">Official: <a href="https://chatgpt.com/" rel="noopener noreferrer" target="_blank">chatgpt.com</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
 
-    <section class="alt" aria-labelledby="yt-title">
-      <div class="wrap">
-        <div class="section-head">
-          <h2 id="yt-title">Relation to YouTube</h2>
-          <p>Same promise, different format.</p>
-        </div>
-        <div class="yt-box">
-          <p>This hub is the long-form companion to our faceless YouTube channel (AI tools &amp; workflows). Channel demos stay short; pages here go deeper on reviews, compares, and recipes.</p>
-          <p>Site and channel share positioning — demos, not hype. Soft CTA only.</p>
-          <a class="btn btn-secondary btn-sm" href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube — channel launching</a>
+          <article class="tool-card">
+            <span class="badge badge-research">Researching</span>
+            <h2>Cursor</h2>
+            <p class="job">AI-native code editor for shipping small apps and scripts with agent-style edits.</p>
+            <p class="tool-meta">Official: <a href="https://cursor.com/" rel="noopener noreferrer" target="_blank">cursor.com</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
+          <article class="tool-card">
+            <span class="badge badge-research">Researching</span>
+            <h2>Notion AI</h2>
+            <p class="job">Notes-and-docs workspace with AI for summaries, rewrite, and lightweight knowledge bases.</p>
+            <p class="tool-meta">Official: <a href="https://www.notion.com/product/ai" rel="noopener noreferrer" target="_blank">notion.com/product/ai</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
+          <article class="tool-card">
+            <span class="badge badge-demo">Demo soon</span>
+            <h2>Perplexity</h2>
+            <p class="job">Answer engine with cited web sources — useful for research briefs before you write.</p>
+            <p class="tool-meta">Official: <a href="https://www.perplexity.ai/" rel="noopener noreferrer" target="_blank">perplexity.ai</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
+          <article class="tool-card">
+            <span class="badge badge-research">Researching</span>
+            <h2>Descript</h2>
+            <p class="job">Edit podcast / video like a doc; useful for faceless YouTube cutdowns and overdubs.</p>
+            <p class="tool-meta">Official: <a href="https://www.descript.com/" rel="noopener noreferrer" target="_blank">descript.com</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
+          <article class="tool-card">
+            <span class="badge badge-research">Researching</span>
+            <h2>ElevenLabs</h2>
+            <p class="job">Text-to-speech and voice cloning for narration when a human VO is not the goal.</p>
+            <p class="tool-meta">Official: <a href="https://elevenlabs.io/" rel="noopener noreferrer" target="_blank">elevenlabs.io</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
+          <article class="tool-card">
+            <span class="badge badge-research">Researching</span>
+            <h2>Midjourney</h2>
+            <p class="job">Image generation for thumbnails, mood boards, and visual concepts (Discord / web).</p>
+            <p class="tool-meta">Official: <a href="https://www.midjourney.com/" rel="noopener noreferrer" target="_blank">midjourney.com</a></p>
+            <p class="partner-note">Partner link TBD / disclosed when live</p>
+          </article>
+
         </div>
       </div>
     </section>
 
-    <section aria-labelledby="cta-title">
+    <section aria-labelledby="next-title" style="padding-top:0">
       <div class="wrap">
         <div class="cta-strip">
           <div>
-            <h2 id="cta-title">Stay in the loop</h2>
-            <p>Join the waitlist for the first batch of reviews and recipes. No spam. No payment required.</p>
+            <h2 id="next-title">Want demos first?</h2>
+            <p>Join the waitlist or watch YouTube. Full honesty rules on <a href="../disclosures.html">Disclosures</a>.</p>
           </div>
           <div class="cta-actions">
-            <a class="btn btn-primary" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Join the waitlist</a>
-            <a class="btn btn-secondary" href="index.html">Back to home</a>
+            <a class="btn btn-primary" href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Email waitlist</a>
+            <a class="btn btn-secondary" href="../index.html">Back to home</a>
           </div>
         </div>
       </div>
@@ -446,20 +417,18 @@
   <footer id="footer-legal">
     <div class="wrap">
       <nav class="footer-nav" aria-label="Footer">
-        <a href="index.html">Home</a>
-        <a href="tools/index.html">Tools</a>
-        <a href="about.html">About</a>
-        <a href="disclosures.html">Disclosures</a>
+        <a href="../index.html">Home</a>
+        <a href="index.html">Tools</a>
+        <a href="../playbooks/prompt-pattern.html">Playbooks</a>
+        <a href="../about.html">About</a>
+        <a href="../disclosures.html">Disclosures</a>
         <a href="mailto:jeking.hwang2025@gmail.com?subject=Toolstack%20Lab%20waitlist">Waitlist</a>
         <a href="https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ" rel="noopener noreferrer" target="_blank">YouTube</a>
       </nav>
-
       <div class="legal">
-        <p><strong>Affiliate disclosure:</strong> None active in Week-1. When used, links will be labeled. Details: <a href="disclosures.html">Disclosures</a>.</p>
-        <p><strong>AI-assisted production:</strong> Scripts, copy, or edits may be AI-assisted; we disclose where required.</p>
-        <p><strong>Not financial advice.</strong> No income guarantees. No payment or checkout on this site.</p>
+        <p><strong>Affiliate disclosure:</strong> None active. Official tool links only; partner links (if any) will be labeled on-page and listed on Disclosures.</p>
+        <p><strong>Not financial advice.</strong> No income guarantees. No payment or checkout on this site. No Polymarket / gambling / crypto-wallet promo.</p>
       </div>
-
       <p class="copy-line">© 2026 Toolstack Lab (provisional name). TEMP brand: Toolstack Lab.</p>
     </div>
   </footer>

@@ -1,8 +1,15 @@
 # Toolstack Lab
 
-English-primary AI tools & workflows hub — demos, not hype.
+Provisional brand — EN-primary AI tools & workflows info hub (demos, not hype).
 
-- Soft CTAs: waitlist email + YouTube
-- No checkout / payments in v0
+**Live:** https://madlouse.github.io/toolstack-lab/
 
-YouTube: https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ
+## Pages
+
+- `/` — Home
+- `/tools/` — Stub tools directory (official links only; partner TBD)
+- `/playbooks/` — Playbooks
+- `/about.html` — About
+- `/disclosures.html` — Affiliates, AI-assisted production, scope (no Polymarket / no checkout)
+
+Soft CTAs only (waitlist mailto · YouTube). No payment, Stripe, or Gumroad on this site.
