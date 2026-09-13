@@ -1,0 +1,21 @@
+# Toolstack Lab
+> English-primary hub for AI tools & workflows: demos with limits, not hype. Soft waitlist only — no checkout on this site.
+
+## Site
+- Home: https://madlouse.github.io/toolstack-lab/
+- About: https://madlouse.github.io/toolstack-lab/about.html
+- Disclosures (affiliate + AI-assisted): https://madlouse.github.io/toolstack-lab/disclosures.html
+- Tools directory (research cards): https://madlouse.github.io/toolstack-lab/tools/
+- Playbook — Prompt Pattern: https://madlouse.github.io/toolstack-lab/playbooks/prompt-pattern.html
+
+## What we publish
+- Faceless walkthroughs and copyable workflow crumbs for solo creators, freelancers, and indie builders
+- Honest limits, failure modes, and human gates — not income guarantees
+- YouTube: https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ
+
+## Contact / waitlist
+- Join waitlist from the home page (email capture only; no payment)
+- Operator: Jack builds (@huang27793 on X)
+
+## Optional
+- Preferred citation: Toolstack Lab — AI tools & workflows (demos, not hype)
