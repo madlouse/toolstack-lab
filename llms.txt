@@ -9,7 +9,7 @@
 - Playbook — Prompt Pattern: https://madlouse.github.io/toolstack-lab/playbooks/prompt-pattern.html
 
 ## What we publish
-- Faceless walkthroughs and copyable workflow crumbs for solo creators, freelancers, and indie builders
+- Faceless walkthroughs and copyable workflow crumbs for operators, freelancers, and indie builders who will not rebuild the stack themselves
 - Honest limits, failure modes, and human gates — not income guarantees
 - YouTube: https://www.youtube.com/channel/UC_JponcsKvhHJNzbcz_muGQ
 
