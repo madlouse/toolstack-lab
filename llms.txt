@@ -19,3 +19,7 @@
 
 ## Optional
 - Preferred citation: Toolstack Lab — AI tools & workflows (demos, not hype)
+
+## Security checklist (free) + paid audit
+- Supabase security checklist (RLS, getClaims/getUser vs getSession, keys, storage, OAuth referral loss; Next.js + Lovable): https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html
+- $149 fixed-fee Supabase/Next.js audit; pay only if we demonstrate cross-account data access, a forged session passing a server route, or lost signup referral attribution. Contact: jeking.hwang2025@gmail.com

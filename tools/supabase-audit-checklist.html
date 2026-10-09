@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supabase Security Checklist: RLS, Auth &amp; Keys (Next.js, Lovable)</title>
+  <meta name="description" content="Free Supabase security checklist for Next.js and Lovable apps: RLS policies, getClaims/getUser vs getSession, service_role keys, storage buckets, OAuth referral loss, plus a 10-minute A/B test.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Supabase security checklist: RLS, auth, keys, storage">
+  <meta property="og:description" content="Free, copyable checklist for Supabase + Next.js and Lovable apps, with the two-account test scanners can't run for you.">
+  <meta property="og:url" content="https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html">
+  <meta property="og:site_name" content="Toolstack Lab">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": "https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html#article",
+        "headline": "Supabase security checklist: RLS, auth, keys and storage for Next.js and Lovable apps",
+        "description": "Free Supabase security checklist: RLS policies, getClaims/getUser vs getSession, service_role and secret keys, storage buckets, OAuth referral loss, and a two-account A/B test.",
+        "datePublished": "2026-10-09",
+        "dateModified": "2026-10-09",
+        "inLanguage": "en",
+        "author": {"@type": "Organization", "name": "Toolstack Lab", "url": "https://madlouse.github.io/toolstack-lab/"},
+        "publisher": {"@type": "Organization", "name": "Toolstack Lab", "url": "https://madlouse.github.io/toolstack-lab/"},
+        "mainEntityOfPage": "https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html",
+        "about": ["Supabase", "Row Level Security", "Next.js", "Lovable", "Application security"]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Toolstack Lab", "item": "https://madlouse.github.io/toolstack-lab/"},
+          {"@type": "ListItem", "position": 2, "name": "Tools", "item": "https://madlouse.github.io/toolstack-lab/tools/"},
+          {"@type": "ListItem", "position": 3, "name": "Supabase security checklist", "item": "https://madlouse.github.io/toolstack-lab/tools/supabase-audit-checklist.html"}
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is enabling RLS enough to secure a Supabase app?",
+            "acceptedAnswer": {"@type": "Answer", "text": "No. Enabling RLS closes a table until a policy opens it. The risk then lives in the policies themselves (for example using (true) on a private table, or an UPDATE policy that lets a user reassign the owner column) and in places RLS does not reach: server code using the secret or service_role key, storage bucket settings, and direct Postgres connections."}
+          },
+          {
+            "@type": "Question",
+            "name": "Should I use getSession, getUser or getClaims on the server?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Use getClaims() to verify who the user is; it verifies the JWT signature. Use getUser() when you need a fresh user record from the Supabase Auth server. Do not use the user object from getSession() for authorization in server code: Supabase's docs say it reads the session out of the cookie without revalidating it, so a forged cookie can produce a forged user id."}
+          },
+          {
+            "@type": "Question",
+            "name": "Is the Supabase anon or publishable key a secret?",
+            "acceptedAnswer": {"@type": "Answer", "text": "No. The publishable key (sb_publishable_...) and the legacy anon key are meant to ship in browser and mobile code; RLS decides what they can reach. The secret key (sb_secret_...) and the legacy service_role key bypass RLS and must only live in server-side code you control."}
+          },
+          {
+            "@type": "Question",
+            "name": "Are files in a public Supabase storage bucket safe?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Anyone with the URL can download files from a public bucket; read access bypasses policies. Uploading, deleting, moving and copying are still controlled by policies on storage.objects. Keep private user files in private buckets and scope storage.objects policies to the user, for example by a folder named after auth.uid()."}
+          },
+          {
+            "@type": "Question",
+            "name": "Does Lovable's security scan replace a manual check?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Run it, it is free: Lovable runs a Quick scan on every publish and offers an on-demand Deep scan. Lovable's own docs say these tools do not replace a thorough security review. A scanner does not know which rows belong to which customer, so you still need the two-account test described on this page."}
+          },
+          {
+            "@type": "Question",
+            "name": "How do I test that one user cannot see another user's data?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Create two normal accounts, A and B. Signed in as B, try to read, update and delete A's rows through the API, and try inserting a row with A's user_id. A blocked update or delete returns success with zero rows rather than an error, so check the affected row count, not the status code. Repeat the same requests signed out."}
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root { --bg:#f8fafc; --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --indigo:#4f46e5; --max:780px; --font:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; }
+    *, *::before, *::after { box-sizing:border-box; }
+    body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.6; }
+    header.top { background:#fff; border-bottom:1px solid var(--line); }
+    header.top .in { max-width:var(--max); margin:0 auto; padding:.8rem 1.25rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    header.top a.brand { font-weight:700; color:var(--ink); text-decoration:none; }
+    header.top nav a { margin-left:1rem; font-size:.92rem; }
+    main { max-width:var(--max); margin:0 auto; padding:2rem 1.25rem 4rem; }
+    h1 { font-size:1.75rem; line-height:1.25; margin:0 0 .75rem; letter-spacing:-.01em; }
+    h2 { font-size:1.2rem; margin:2.2rem 0 .7rem; }
+    h3 { font-size:1rem; margin:1.4rem 0 .4rem; }
+    p, .lede { color:var(--muted); }
+    .lede { font-size:1.05rem; }
+    .meta { font-size:.85rem; color:var(--muted); }
+    .box { background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:1rem 1.15rem; margin:1.25rem 0; color:var(--ink); }
+    .box p { color:var(--ink); margin:.4rem 0; }
+    ol.steps li, ul.checks li { margin:.55rem 0; color:var(--ink); }
+    ul.checks { padding-left:1.2rem; }
+    code { font-size:.88em; background:#f1f5f9; padding:.1em .35em; border-radius:4px; }
+    pre { background:#0f172a; color:#e2e8f0; padding:.9rem 1rem; border-radius:10px; overflow-x:auto; font-size:.85rem; }
+    pre code { background:none; padding:0; color:inherit; }
+    .toc { background:#fff; border:1px solid var(--line); border-radius:12px; padding:.8rem 1.1rem; }
+    .toc ol { margin:.3rem 0; padding-left:1.2rem; }
+    .cta { margin-top:2.5rem; padding:1.2rem 1.3rem; border:2px solid var(--indigo); border-radius:12px; background:#fff; }
+    .cta p, .cta li { color:var(--ink); }
+    .btn { display:inline-block; background:var(--indigo); color:#fff; padding:.6rem 1.1rem; border-radius:8px; text-decoration:none; font-weight:600; margin:.4rem 0; }
+    .btn:hover { background:#3730a3; color:#fff; }
+    a { color:var(--indigo); }
+    details { background:#fff; border:1px solid var(--line); border-radius:10px; padding:.6rem 1rem; margin:.5rem 0; }
+    details summary { cursor:pointer; font-weight:600; }
+    details p { margin:.5rem 0 .2rem; }
+    footer { margin-top:2.5rem; font-size:.85rem; color:var(--muted); border-top:1px solid var(--line); padding-top:1rem; }
+    .sev { white-space:nowrap; font-size:.85em; color:var(--muted); }
+  </style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Toolstack Lab</a>
+  <nav aria-label="Primary"><a href="index.html">Tools</a><a href="../about.html">About</a><a href="../disclosures.html">Disclosures</a><a href="#audit">$149 audit</a></nav>
+</div></header>
+<main id="main">
+  <p class="meta"><a href="../index.html">Home</a> › <a href="index.html">Tools</a> › Supabase security checklist</p>
+  <h1>Supabase security checklist: RLS, auth, keys and storage for Next.js and Lovable apps</h1>
+  <p class="lede">A free, copyable checklist for apps built on Supabase, whether hand-written in Next.js or generated by Lovable, Bolt, v0 or Cursor. Each item says what to look for, why it matters, and the fix. It came out of a static code review of three open-source Supabase + Next.js starters.</p>
+  <p class="meta">Updated 2026-10-09 · Checked against the current Supabase docs (Auth SSR, API keys, Storage, RLS). Static review only; nothing here asks you to attack a system you don't own.</p>
+
+  <nav class="toc" aria-label="Contents"><strong>Contents</strong>
+    <ol>
+      <li><a href="#ab-test">The 10-minute A/B test scanners can't do</a></li>
+      <li><a href="#rls">Row Level Security and grants</a></li>
+      <li><a href="#keys">Keys and secrets</a></li>
+      <li><a href="#auth">Server auth: getClaims / getUser vs getSession</a></li>
+      <li><a href="#edge">Edge Functions and API routes</a></li>
+      <li><a href="#storage">Storage buckets</a></li>
+      <li><a href="#redirects">Redirects and OAuth</a></li>
+      <li><a href="#referral">Referral attribution (the money bug)</a></li>
+      <li><a href="#lovable">Lovable / AI-built app notes</a></li>
+      <li><a href="#found">What showed up in 3 open-source starters</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#audit">Fixed-fee audit ($149)</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="ab-test">1. The 10-minute A/B test scanners can't do</h2>
+  <p>Scanners (Supabase Security Advisor, Lovable's scans, open-source linters) check policy shapes and known misconfigurations. They don't know which rows belong to which customer. This test does.</p>
+  <ol class="steps">
+    <li>Create two normal accounts in your app: <strong>A</strong> and <strong>B</strong>. Create some private data as A.</li>
+    <li>Signed in as B, call the API directly (browser console or a script using the publishable key and B's session): read A's rows by id, list the table with your app's filters removed, update A's row, delete A's row.</li>
+    <li>As B, insert a row with A's <code>user_id</code> (or <code>org_id</code> / <code>workspace_id</code>), and try to update your own row to set the owner column to A.</li>
+    <li><strong>Check the row count, not the status code.</strong> When RLS filters out an UPDATE or DELETE, the request still succeeds and simply affects zero rows. "No error" does not mean "blocked", and it does not mean "allowed".</li>
+    <li>Repeat everything signed out (the <code>anon</code> role).</li>
+    <li>Do the same for storage paths, RPC functions and your own server routes. Re-run it after every migration or AI edit that touches policies; Supabase supports SQL policy tests under <code>supabase/tests/</code> run with <code>supabase test db</code>.</li>
+  </ol>
+<pre><code>// as user B, with the normal browser client
+const { data, error } = await supabase
+  .from('invoices').update({ amount: 0 })
+  .eq('id', A_INVOICE_ID).select();
+// expect: error == null AND data.length === 0  (blocked)
+// data.length === 1 means B just changed A's row</code></pre>
+
+  <h2 id="rls">2. Row Level Security and grants</h2>
+  <ul class="checks">
+    <li><strong>RLS is enabled on every table in an exposed schema</strong> (<code>public</code> by default). Tables created in the Dashboard Table Editor get RLS on by default; tables created with raw SQL or migrations need <code>alter table ... enable row level security</code>. A table that is granted to <code>anon</code>/<code>authenticated</code> with RLS off is readable and writable by anyone with your publishable key. <span class="sev">Critical if it holds user data</span></li>
+    <li><strong>Grants are deliberate.</strong> Postgres checks grants first, then RLS. On existing projects, new tables in <code>public</code> have historically been auto-granted to <code>anon</code>, <code>authenticated</code> and <code>service_role</code>. Supabase is turning that off: new projects since May 30, 2026, and existing projects for newly created tables from <strong>October 30, 2026</strong>. After that, a new table without a grant fails with <code>42501 permission denied</code>. Don't "fix" that with <code>grant ... on all tables in schema public to anon</code>; grant only what each role needs, in the same migration that creates the table.</li>
+    <li><strong>No <code>using (true)</code> / <code>with check (true)</code> on private tables.</strong> Public catalog tables (products, prices) are fine; <code>profiles</code>, <code>orders</code>, <code>messages</code> are not.</li>
+    <li><strong>INSERT and UPDATE policies pin ownership in <code>with check</code>.</strong> INSERT policies only take <code>with check</code>, so make it <code>(select auth.uid()) = user_id</code>, not <code>true</code>. For UPDATE, Postgres reuses <code>using</code> as the check when <code>with check</code> is omitted; that's safe only if the expression pins the owner column. A permissive <code>with check</code> lets a user hand a row to someone else, or create rows owned by another user.</li>
+    <li><strong>Ownership comes from <code>auth.uid()</code> or verified membership</strong>, never from a request-supplied id. The owner column is <code>not null</code> and references <code>auth.users</code>. Don't base policies on <code>user_metadata</code>, which users can edit themselves (Security Advisor lint 0015).</li>
+    <li><strong>Views and <code>SECURITY DEFINER</code> functions are reviewed separately.</strong> Both can bypass RLS. Pin <code>search_path</code> on definer functions (lint 0011) and revoke <code>execute</code> from <code>anon</code>/<code>public</code> on anything that shouldn't be callable from the browser.</li>
+    <li><strong>Security Advisor is clean, or every remaining finding is explained.</strong> Run it in Studio (Database › Security Advisor) or with <code>supabase db advisors</code>. Useful, but it can't replace the A/B test.</li>
+  </ul>
+
+  <h2 id="keys">3. Keys and secrets</h2>
+  <ul class="checks">
+    <li><strong>Only the publishable key (<code>sb_publishable_...</code>) or legacy <code>anon</code> key reaches the browser.</strong> These are public by design; RLS is what protects data.</li>
+    <li><strong>The secret key (<code>sb_secret_...</code>) and legacy <code>service_role</code> key never reach the browser.</strong> They bypass RLS entirely. Search your built JS (<code>.next/static</code>, <code>dist/</code>) for <code>service_role</code>, <code>sb_secret_</code> and long <code>eyJ...</code> strings. <span class="sev">Critical</span></li>
+    <li><strong>Nothing secret behind <code>NEXT_PUBLIC_</code> / <code>VITE_</code>.</strong> Those prefixes are bundled into client code.</li>
+    <li><strong>Server files that create an admin client never get imported into a client component</strong> (no <code>'use client'</code> in the import chain; consider the <code>server-only</code> package).</li>
+    <li><strong>No real keys in committed <code>.env</code> files or git history.</strong> If a secret leaked, fix the cause, then rotate it in Settings › API Keys.</li>
+    <li><strong>Supabase is retiring legacy <code>anon</code>/<code>service_role</code> keys by end of 2026.</strong> Plan the move to publishable/secret keys.</li>
+  </ul>
+
+  <h2 id="auth">4. Server auth: getClaims / getUser vs getSession</h2>
+  <ul class="checks">
+    <li><strong>Server code decides who the user is with <code>getClaims()</code> or <code>getUser()</code>, never with <code>getSession()</code>.</strong> From Supabase's Next.js SSR guide: "Never trust <code>supabase.auth.getSession()</code> inside server code such as Proxy. It reads the session out of the cookie without revalidating it." <code>getClaims()</code> verifies the JWT signature (locally on projects with asymmetric signing keys); <code>getUser()</code> asks the Auth server for the current user record. In a local test, an unsigned, forged cookie came back from <code>getSession()</code> on the server as a fully populated user. <span class="sev">Medium to high, depending on what that user id unlocks</span></li>
+    <li><strong>Watch where the user id goes.</strong> The dangerous pattern is <code>session.user.id</code> from <code>getSession()</code> flowing into a service-role query, a Stripe customer lookup or a billing portal link. RLS doesn't help there because the secret key bypasses it.</li>
+    <li><strong>The Next.js middleware (<code>proxy.ts</code> in Next.js 16, <code>middleware.ts</code> before) refreshes the session and protected routes fail closed.</strong> Look for guards that are commented out, or route lists that miss new pages. Middleware is not the only gate: every Server Action and Route Handler that touches private data checks the user itself.</li>
+    <li><strong>Session responses aren't cached.</strong> If you use ISR or a CDN, a cached <code>Set-Cookie</code> can sign one visitor in as another. Apply the cache headers <code>@supabase/ssr</code> passes to <code>setAll</code>.</li>
+    <li><strong>Sign-up abuse:</strong> email confirmation on, a sensible minimum password length, CAPTCHA (Turnstile or hCaptcha) on public sign-up, and anonymous sign-ins off unless you use them (lint 0012).</li>
+  </ul>
+
+  <h2 id="edge">5. Edge Functions and API routes</h2>
+  <ul class="checks">
+    <li><strong>Every function or route that uses the secret key checks the caller first</strong> (a verified user via <code>getClaims()</code>/<code>getUser()</code>, a shared secret, or a webhook signature). A service-role endpoint with no caller check is an open admin API. <span class="sev">High</span></li>
+    <li><strong>Don't rely on <code>verify_jwt</code> alone.</strong> Supabase notes that with the new publishable/secret keys, passing the <code>verify_jwt</code> check doesn't authenticate the caller; authorize in code. If <code>verify_jwt = false</code> (common for webhooks), the function must do its own check.</li>
+    <li><strong>Webhooks verify signatures on the raw body</strong> (<code>stripe.webhooks.constructEvent</code>, svix, etc.).</li>
+    <li><strong>RPC / server functions taking a <code>user_id</code> parameter</strong> ignore it and use the authenticated user, or check that it matches.</li>
+  </ul>
+
+  <h2 id="storage">6. Storage buckets</h2>
+  <ul class="checks">
+    <li><strong>Public buckets are public for reads.</strong> Supabase docs: a public bucket bypasses access control for retrieving and serving files, so anyone with the URL can download them. Uploading, deleting, moving and copying are still controlled by policies. Fine for avatars and blog images; wrong for invoices, IDs or private uploads. Buckets are private by default.</li>
+    <li><strong>Private-bucket policies on <code>storage.objects</code> scope to the user</strong>, typically <code>bucket_id = 'docs' and (storage.foldername(name))[1] = (select auth.uid())::text</code>. A policy that only checks <code>bucket_id</code> lets every signed-in user read every file. <span class="sev">High</span></li>
+    <li><strong>Test list, download, upload, overwrite and delete separately</strong> as user B against A's folder. Upsert needs select and update permissions too.</li>
+    <li><strong>Signed URLs have short expiries</strong>, and upload paths are built server-side or sanitized, not taken verbatim from the client.</li>
+  </ul>
+
+  <h2 id="redirects">7. Redirects and OAuth</h2>
+  <ul class="checks">
+    <li><strong>Post-login redirects only go to relative, same-origin paths.</strong> A raw <code>?next=</code> or <code>?redirect=</code> used verbatim is an open redirect.</li>
+    <li><strong>Redirect URLs aren't built from <code>Host</code> / <code>X-Forwarded-Host</code></strong> unless your platform pins those headers.</li>
+    <li><strong>The Auth redirect allow-list is tight in production</strong> (no wildcard localhost or preview domains you don't control).</li>
+  </ul>
+
+  <h2 id="referral">8. Referral attribution (the money bug)</h2>
+  <ul class="checks">
+    <li><strong><code>?ref=</code> / UTM survives the OAuth round trip.</strong> <code>signInWithOAuth</code> sends the user to Google or GitHub and back to a fixed <code>redirectTo</code>; the query string from the landing page is gone. Referred signups then look organic and partners aren't credited. Fix: store the ref in a first-party cookie (or an allow-listed <code>redirectTo</code> parameter) before redirecting, then read it server-side in the callback.</li>
+    <li><strong>Attribution is written server-side, once, and can't be forged by the client.</strong> If the browser writes <code>referred_by</code> directly, users can self-refer or credit anyone. Write it in the callback (or in a <code>SECURITY DEFINER</code> function with a pinned <code>search_path</code> that uses <code>auth.uid()</code> and only sets the value when it's empty). Check that the referrer exists.</li>
+    <li><strong>Self-referral is blocked and rewards are idempotent</strong> per referred user (no double credit on retries).</li>
+  </ul>
+
+  <h2 id="lovable">9. Lovable and other AI-built apps</h2>
+  <p>Lovable apps store data in Supabase, so everything above applies. Lovable runs a free <strong>Quick scan</strong> on every publish and offers an on-demand <strong>Deep scan</strong> (More › Security). Run both. Lovable's own docs say these tools "do not replace a thorough security review". In practice the gaps are the ones a scanner can't infer:</p>
+  <ul class="checks">
+    <li>Which rows belong to which customer or team (run the A/B test above).</li>
+    <li>Lead or contact forms: the table should allow <code>insert</code> for <code>anon</code> and nothing else. Watch for <code>.insert(...).select()</code>: returning the new row needs a select policy, and the usual "fix" opens select to everyone. Drop the <code>.select()</code> instead.</li>
+    <li>Edge Functions the AI wrote with the secret key and no caller check.</li>
+    <li>Policies that changed after the last scan. Re-test after every prompt that touches the database.</li>
+  </ul>
+
+  <h2 id="found">10. What showed up in 3 open-source starters</h2>
+  <p>We ran this checklist against three public Supabase + Next.js starters (code only, pinned commits, no live systems contacted): <code>vercel/nextjs-subscription-payments</code>, <code>KolbySisk/next-supabase-stripe-starter</code> and <code>Razikus/supabase-nextjs-template</code>.</p>
+  <ul class="checks">
+    <li><strong>Server authorization built on <code>getSession()</code></strong> in one starter, feeding a service-role Stripe customer lookup and billing-portal route, with the middleware route guard commented out. Exploiting it still needs the victim's user id, so it's high, not critical.</li>
+    <li><strong><code>?ref=</code> / UTM lost on OAuth sign-in in all three</strong> (constant <code>redirectTo</code>, nothing read in the callback).</li>
+    <li>Smaller items: full DML (including <code>truncate</code>) granted to <code>anon</code> on a table protected only by RLS; <code>SECURITY DEFINER</code> trigger functions without a pinned <code>search_path</code>; a real project <code>.env</code> committed in one template.</li>
+    <li>Verified fine: public <code>products</code>/<code>prices</code> catalog policies, Stripe webhook signature checks, upload paths scoped to the user's folder.</li>
+  </ul>
+
+  <h2 id="faq">FAQ</h2>
+  <details open><summary>Is enabling RLS enough to secure a Supabase app?</summary>
+    <p>No. Enabling RLS closes a table until a policy opens it. The risk then lives in the policies themselves (for example <code>using (true)</code> on a private table, or an UPDATE policy that lets a user reassign the owner column) and in places RLS doesn't reach: server code using the secret or <code>service_role</code> key, storage bucket settings, and direct Postgres connections.</p></details>
+  <details><summary>Should I use getSession, getUser or getClaims on the server?</summary>
+    <p>Use <code>getClaims()</code> to verify who the user is; it verifies the JWT signature. Use <code>getUser()</code> when you need a fresh user record from the Auth server. Don't use the user object from <code>getSession()</code> for authorization in server code: Supabase's docs say it reads the session out of the cookie without revalidating it, so a forged cookie can produce a forged user id.</p></details>
+  <details><summary>Is the Supabase anon or publishable key a secret?</summary>
+    <p>No. The publishable key and the legacy anon key are meant to ship in browser and mobile code; RLS decides what they can reach. The secret key and legacy <code>service_role</code> key bypass RLS and must only live in server-side code you control.</p></details>
+  <details><summary>Are files in a public Supabase storage bucket safe?</summary>
+    <p>Anyone with the URL can download files from a public bucket; reads bypass policies. Uploads, deletes, moves and copies are still controlled by policies on <code>storage.objects</code>. Keep private files in private buckets and scope policies to the user.</p></details>
+  <details><summary>Does Lovable's security scan replace a manual check?</summary>
+    <p>Run it; it's free. But Lovable's docs say its scans don't replace a thorough security review, and no scanner knows which rows belong to which customer. Do the two-account test.</p></details>
+  <details><summary>How do I test that one user can't see another user's data?</summary>
+    <p>Create accounts A and B. As B, try to read, update and delete A's rows through the API, and insert a row with A's <code>user_id</code>. A blocked update or delete returns success with zero rows, so check the row count, not the status code. Repeat signed out.</p></details>
+
+  <section class="cta" id="audit" aria-labelledby="audit-title">
+    <h2 id="audit-title" style="margin-top:0">Want it done for you? Fixed-fee audit: $149</h2>
+    <p>I run the A/B test above plus a code review against this checklist, then send a written report with file-and-line findings, severity and fixes.</p>
+    <p><strong>You only pay if I can demonstrate at least one of these:</strong></p>
+    <ul>
+      <li>account B reading or changing account A's data,</li>
+      <li>a forged session getting through one of your server routes, or</li>
+      <li>signups losing their <code>ref</code> / referral attribution.</li>
+    </ul>
+    <p>Doc reminders and hygiene notes don't count. If none of the three turns up, you get the report and owe nothing.</p>
+    <p><strong>To start, email:</strong> your app URL (staging is best), repo access or a code export, your stack (Next.js, Lovable, Bolt...), and confirmation that you own the app and we may test it with two test accounts. I only test systems the owner authorizes. No payment is taken on this site.</p>
+    <a class="btn" href="mailto:jeking.hwang2025@gmail.com?subject=Supabase%20audit%20request&amp;body=App%20URL%20(staging%20preferred)%3A%0ARepo%20or%20code%20export%3A%0AStack%20(Next.js%20%2F%20Lovable%20%2F%20other)%3A%0AWhat%20data%20is%20sensitive%3A%0AReferral%20%2F%20affiliate%20program%3F%20(y%2Fn)%3A%0AI%20own%20this%20app%20and%20authorize%20testing%20with%20two%20test%20accounts%3A%20yes%0A">Email an audit request</a>
+    <p class="meta">Or write to <strong>jeking.hwang2025@gmail.com</strong> with the subject "Supabase audit request". Questions about the checklist are welcome too.</p>
+  </section>
+
+  <footer>
+    <p>Toolstack Lab · Free checklist based on a static review of open-source starters. Not legal or compliance advice. This page promotes a paid service offered by the site operator; see <a href="../disclosures.html">Disclosures</a>.</p>
+    <p>Sources: Supabase docs on <a href="https://supabase.com/docs/guides/auth/server-side/nextjs" rel="noopener">server-side auth</a>, <a href="https://supabase.com/docs/guides/api/api-keys" rel="noopener">API keys</a>, <a href="https://supabase.com/docs/guides/storage/buckets/fundamentals" rel="noopener">storage buckets</a>, <a href="https://supabase.com/docs/guides/database/postgres/row-level-security" rel="noopener">RLS</a>, <a href="https://supabase.com/docs/guides/api/securing-your-api" rel="noopener">securing your API</a>, <a href="https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically" rel="noopener">Data API grants change</a>; Lovable <a href="https://docs.lovable.dev/features/security" rel="noopener">security overview</a>.</p>
+  </footer>
+</main>
+</body>
+</html>
