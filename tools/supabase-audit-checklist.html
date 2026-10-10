@@ -23,7 +23,7 @@
         "headline": "Supabase security checklist: RLS, auth, keys and storage for Next.js and Lovable apps",
         "description": "Free Supabase security checklist: RLS policies, getClaims/getUser vs getSession, service_role and secret keys, storage buckets, OAuth referral loss, and a two-account A/B test.",
         "datePublished": "2026-10-09",
-        "dateModified": "2026-10-09",
+        "dateModified": "2026-10-10",
         "inLanguage": "en",
         "author": {"@type": "Organization", "name": "Toolstack Lab", "url": "https://madlouse.github.io/toolstack-lab/"},
         "publisher": {"@type": "Organization", "name": "Toolstack Lab", "url": "https://madlouse.github.io/toolstack-lab/"},
@@ -156,6 +156,7 @@ const { data, error } = await supabase
   .eq('id', A_INVOICE_ID).select();
 // expect: error == null AND data.length === 0  (blocked)
 // data.length === 1 means B just changed A's row</code></pre>
+  <p>Want the read, update and storage parts scripted? <a href="https://github.com/madlouse/supabase-rls-ab-test">supabase-rls-ab-test</a> is a free, MIT-licensed Python script (no dependencies) that signs in as A and B with your publishable key and reports any row B can read or update. Read-only unless you pass <code>--write</code>, and that write is a no-op. Run it on staging.</p>
 
   <h2 id="rls">2. Row Level Security and grants</h2>
   <ul class="checks">
